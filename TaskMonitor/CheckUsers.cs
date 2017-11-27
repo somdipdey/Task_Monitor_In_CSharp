@@ -12,6 +12,7 @@ namespace TaskMonitor
 
         public CheckUsers()
         {
+            // Gets the System/Machine name 
             ServerName = Environment.MachineName.ToString();
         }
 
@@ -94,6 +95,7 @@ namespace TaskMonitor
             WTSCloseServer(ServerHandle);
         }
 
+        // Method which fetches the total session counts
         public int GetTotalSessionCount()
         {
             int totalUsers = 0;
