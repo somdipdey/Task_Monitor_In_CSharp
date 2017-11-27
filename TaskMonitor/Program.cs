@@ -110,7 +110,7 @@ namespace TaskMonitor
                     // Thread sleeps for 30 seconds before repeating the task
                     Thread.Sleep(30000);
 
-                    // Initiate everything as null before starting again
+                    // Initiate everything as null before starting again. This part is redundant and unnecessary.
                     machineName = null;
                     totalUsers = -1;
                     totalSessions = -1;
