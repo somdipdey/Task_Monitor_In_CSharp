@@ -103,6 +103,7 @@ namespace TaskMonitor
                     var totalRam = sysPerformance.Total_SYS_RAM_In_MB;
                     Process[] allProcesses = Process.GetProcesses();
 
+                    // CSV Format:: ServerName,TotalUsers,Sessions,ProcessesRunning,CPUUsage,RAMInPercent,RAMUsed,TotalRAM,DateTime
                     string outputString = machineName + "," + totalUsers + "," + totalSessions + "," + allProcesses.Length + "," + cpuUsage + "," + ramUsageInPercent + "," +
                                             ramUsageInMb + "," + totalRam + "," + DateTime.Now;
                     WriteToFile(outputString, "task-monitor");
