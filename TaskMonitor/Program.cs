@@ -109,6 +109,16 @@ namespace TaskMonitor
                     WriteToFile(outputString, "task-monitor");
                     // Thread sleeps for 30 seconds before repeating the task
                     Thread.Sleep(30000);
+
+                    // Initiate everything as null before starting again
+                    machineName = null;
+                    totalUsers = -1;
+                    totalSessions = -1;
+                    cpuUsage = -1;
+                    ramUsageInPercent = -1;
+                    ramUsageInMb = -1;
+                    totalRam = -1;
+                    allProcesses = null;
                 }
             }
             catch (Exception ex) {
