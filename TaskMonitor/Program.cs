@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 using SystemPerformance;
@@ -20,22 +16,22 @@ namespace TaskMonitor
             // Check for valid arguments
             if (args.Length < 1)
             {
-                Console.WriteLine("Please enter valid arugment:\n" +
+                Console.WriteLine("Please enter valid argument:\n" +
                                     "help: for more info\n" + ">");
                 string enteredArgs = Console.ReadLine();
-                Program.ExecuteCommand(enteredArgs);
+                ExecuteCommand(enteredArgs);
 
             }
             else if (args.Length > 1)
             {
-                Console.WriteLine("Please enter only one valid arugment at a time:\n" +
+                Console.WriteLine("Please enter only one valid argument at a time:\n" +
                     "help: for more info\n" + ">");
                 string enteredArgs = Console.ReadLine();
-                Program.ExecuteCommand(enteredArgs);
+                ExecuteCommand(enteredArgs);
             }
             else
             {
-                Program.ExecuteCommand(args[0]);
+                ExecuteCommand(args[0]);
             }
         }
 
@@ -59,17 +55,18 @@ namespace TaskMonitor
             // If "run" is passed as argument
             else if (arg.ToLower().Trim() == "run")
             {
-                if(ThisProgamAlreadyRunning())
+                if(ThisProgramAlreadyRunning())
                 {
                     Console.WriteLine("The program is already running. Please stop the previous instance and then run again.\n" + ">");
                     string enteredArg = Console.ReadLine();
                     ExecuteCommand(enteredArg);
                 }
-                // System monitoring is performed in a seperate thread with lowest priority for maximum responsiveness
+                // System monitoring is performed in a separate thread with lowest priority for maximum responsiveness
                 Thread executeThread = new Thread(Execute);
                 executeThread.Priority = ThreadPriority.Lowest;
                 executeThread.IsBackground = true;
                 executeThread.Start();
+                Execute();
             }
             // If "stop" is passed as argument
             else if (arg.ToLower().Trim() == "stop")
@@ -128,7 +125,7 @@ namespace TaskMonitor
         }
 
         // Check if this program instance is already running in the system
-        private static bool ThisProgamAlreadyRunning()
+        private static bool ThisProgramAlreadyRunning()
         {
 
             using (Mutex mutex = new Mutex(false, "Global\\" + appGuid))
@@ -145,7 +142,7 @@ namespace TaskMonitor
         // Terminate this program forcefully using command
         private static void TerminateThisProgram()
         {
-            String process = Process.GetCurrentProcess().ProcessName;
+            string process = Process.GetCurrentProcess().ProcessName;
             Process.Start("cmd.exe", "/c taskkill /F /IM " + process + ".exe /T");
         }
 
