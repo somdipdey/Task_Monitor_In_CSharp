@@ -3,18 +3,22 @@ using System.Threading;
 using System.IO;
 using System.Diagnostics;
 using SystemPerformance;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace TaskMonitor
 {
     class Program
     {
-        // Provide an appGuid for tracking purposes
+        /// <summary>
+        /// Provide an appGuid for tracking purposes
+        /// </summary>
         private static string appGuid = "f6d4871e-b63e-4685-89fc-155bb5cd95e5";
 
         static void Main(string[] args)
         {
             // Check for valid arguments
-            if (args.Length < 1)
+            /*if (args.Length < 1)
             {
                 Console.WriteLine("Please enter valid argument:\n" +
                                     "help: for more info\n" + ">");
@@ -22,20 +26,21 @@ namespace TaskMonitor
                 ExecuteCommand(enteredArgs);
 
             }
-            else if (args.Length > 1)
+            else*/ if (args.Length > 1)
             {
                 Console.WriteLine("Please enter only one valid argument at a time:\n" +
                     "help: for more info\n" + ">");
                 string enteredArgs = Console.ReadLine();
                 ExecuteCommand(enteredArgs);
             }
+            // Passes the command "run" by default for debugging purposes.
             else
             {
-                ExecuteCommand(args[0]);
+                ExecuteCommand("run");
             }
         }
 
-        private static void ExecuteCommand(string arg)
+        async private static void ExecuteCommand(string arg)
         {
             // If "help" is passed as argument
             if (arg.ToLower().Trim() == "help")
@@ -62,11 +67,13 @@ namespace TaskMonitor
                     ExecuteCommand(enteredArg);
                 }
                 // System monitoring is performed in a separate thread with lowest priority for maximum responsiveness
-                Thread executeThread = new Thread(Execute);
-                executeThread.Priority = ThreadPriority.Lowest;
-                executeThread.IsBackground = true;
-                executeThread.Start();
-                Execute();
+                //Task executeThread = new Task();
+                //executeThread.Priority = ThreadPriority.Lowest;
+                //executeThread.IsBackground = true;
+                //executeThread.Start();
+
+                //Using a Task instead of a Thread to avoid the Exception on File Creation.
+                await Execute();
             }
             // If "stop" is passed as argument
             else if (arg.ToLower().Trim() == "stop")
@@ -79,9 +86,11 @@ namespace TaskMonitor
             }
         }
 
-        // Summary:
-        // The method that keeps track of the system performance and writes it to a CSV file
-        private static void Execute()
+        /// <summary>
+        /// The method that keeps track of the system performance and writes it to a CSV file
+        /// </summary>
+        /// <returns></returns>
+        private static async Task Execute()
         {
             Console.WriteLine("Task-monitor started running....");
             try
@@ -116,6 +125,7 @@ namespace TaskMonitor
                     ramUsageInMb = -1;
                     totalRam = -1;
                     allProcesses = null;
+                    
                 }
             }
             catch (Exception ex) {
@@ -124,7 +134,10 @@ namespace TaskMonitor
             }
         }
 
-        // Check if this program instance is already running in the system
+        /// <summary>
+        /// Check if this program instance is already running in the system
+        /// </summary>
+        /// <returns></returns>
         private static bool ThisProgramAlreadyRunning()
         {
 
@@ -139,7 +152,9 @@ namespace TaskMonitor
             return false;
         }
 
-        // Terminate this program forcefully using command
+        /// <summary>
+        /// Terminate this program forcefully using command
+        /// </summary>
         private static void TerminateThisProgram()
         {
             string process = Process.GetCurrentProcess().ProcessName;
@@ -152,10 +167,13 @@ namespace TaskMonitor
             try
             {
                 string Path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-                StreamWriter SW = new StreamWriter(Path + "\\" + fileName.Trim() + ".CSV", true);
-                SW.WriteLine(message);
-                SW.Flush();
-                SW.Close();
+                using (StreamWriter SW = new StreamWriter(Path + "\\" + fileName.Trim() + ".CSV", true))
+                {
+                    SW.WriteLine(message);
+                    SW.Flush();
+                    SW.Close();
+
+                }
             }
             catch (Exception ex) { Console.WriteLine("Error writing out to file - " + fileName + ". Exception: " + ex.Message); }
         }
